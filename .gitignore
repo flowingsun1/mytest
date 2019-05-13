@@ -9,6 +9,7 @@ target
 .DS_Store
 build/
 .gradle/
+gradle/
 private.txt
 *.log
 classes/
