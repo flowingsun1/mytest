@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <RollingRandomAccessFile name="logFile"
+                                 fileName="logs/nxms-alerter.log"
+                                 filePattern="logs/$${date:yyyy-MM}/nxms-alerter-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout
+                    pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>      <!--每1小时/分/... 生成一个文件, 时间依据filePattern的配置-->
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30">
+                <Delete basePath="logs/$${date:yyyy-MM}/" maxDepth="2">
+                    <IfFileName glob="*.log" />
+                    <!--!Note: 这里的age必须和filePattern协调, 后者是精确到HH, 这里就要写成xH, xd就不起作用
+                    另外, 数字最好>2, 否则可能造成删除的时候, 最近的文件还处于被占用状态,导致删除不成功!-->
+                    <!--7天-->
+                    <IfLastModified age="168H" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="logFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="com.lyy.tomcat" level="debug" />
+        <Loggerer name="org.springframework" level="INFO"/>
+        <!--additivity="false" 可禁止输出到控制台日志-->
+    </Loggers>
+</Configuration>

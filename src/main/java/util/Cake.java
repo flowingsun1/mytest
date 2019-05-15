@@ -1,9 +1,11 @@
+package util;
+
 import java.util.Arrays;
 /**
  * @Author: lyy
  * @Date: 2019/2/18 10:27
  */
-public class Hello {
+public class Cake {
     //剩余蛋糕数量
     private static int[] leftCakes;
     //蛋糕总量（不是数量，而是大小之和）
