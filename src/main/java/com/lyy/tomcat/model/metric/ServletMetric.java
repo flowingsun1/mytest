@@ -1,14 +1,10 @@
 package com.lyy.tomcat.model.metric;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class ServletMetric {
     //异步支持
     private Boolean asyncSupported;

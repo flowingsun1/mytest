@@ -1,17 +1,13 @@
 package com.lyy.tomcat.model.metric;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ServerMetric {
     //地址
-    private String host;
+    private String address;
     //建模类型
     private String modelerType;
     //端口
@@ -21,7 +17,7 @@ public class ServerMetric {
     //版本
     private String serverInfo;
     //关闭
-    private String shutDown;
+    private String shutdown;
     //状态
     private String stateName;
 }

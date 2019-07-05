@@ -1,11 +1,12 @@
 package springboot;
 
 import com.lyy.tomcat.test.Test;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,6 @@ import java.util.Map;
 @RestController
 public class SpringBootStart {
     private static final String CHECK_TOMCAT_CONNECT = "/tomcats/test/{jmxConnect}";
-    private static Logger logger = LoggerFactory.getLogger(Test.class);
     @RequestMapping("/hello")
     public String hello() {
         return "hello world";
@@ -33,16 +33,17 @@ public class SpringBootStart {
     public Boolean api() {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, String> param = new HashMap<>(1);
-        param.put("jmxConnect", "localhost:8888,localhost:8889");
-        ResponseEntity<Boolean> exchange = restTemplate.exchange("http://localhost:9081" + CHECK_TOMCAT_CONNECT, HttpMethod.GET, null, Boolean.class, param);
+        param.put("jmxConnect", "localhost:8888,localhost:8999");
+        ResponseEntity<Boolean> exchange = restTemplate.exchange("http://192.168.1.95:9082" + CHECK_TOMCAT_CONNECT, HttpMethod.GET, null, Boolean.class, param);
         return exchange.getBody();
     }
 
 
     public static void main(String[] args) {
 
-        SpringApplication.run(SpringBootStart.class,args);
-        logger.debug("lueluelue");
+        ConfigurableApplicationContext context = SpringApplication.run(SpringBootStart.class,args);
+
+        System.out.println(111);
     }
 
 

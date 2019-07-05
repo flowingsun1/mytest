@@ -10,6 +10,7 @@ import javax.management.remote.JMXServiceURL;
 import javax.management.remote.rmi.RMIConnectorServer;
 import javax.naming.Context;
 import javax.rmi.ssl.SslRMIClientSocketFactory;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.Map;
  * @date 2018/12/21.
  * tomcat jmx连接,只需传入ip:port即可
  */
-public class TomcatJmx {
+public class TomcatJmx implements Closeable {
 
     private Log log = LogFactory.getLog(TomcatJmx.class);
 

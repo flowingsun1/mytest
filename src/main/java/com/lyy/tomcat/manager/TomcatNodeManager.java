@@ -7,10 +7,13 @@ import com.lyy.tomcat.model.dynamicMetric.ProtocolDynamicMetric;
 import com.lyy.tomcat.model.dynamicMetric.ThreadPoolDynamicMetric;
 import com.lyy.tomcat.model.metric.TomcatNodeDetail;
 import com.lyy.tomcat.model.metric.TomcatNodeMetric;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.management.MBeanServerConnection;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class TomcatNodeManager {
 
     private String host;
@@ -34,42 +37,55 @@ public class TomcatNodeManager {
 
 
     public TomcatNodeMetric getNodeMetric() {
-        TomcatJmx jmx = new TomcatJmx(this.host, this.port);
-        jmx.connect();
-        MBeanServerConnection mbsc = jmx.getConnection();
-        TomcatNodeMetric node = setTomcatNodeDetail(mbsc, TomcatMetrics.getTomcatNodeMetric(mbsc));
-        jmx.close();
-        return node;
+        try(TomcatJmx jmx = new TomcatJmx(this.host, this.port)){
+            jmx.connect();
+            MBeanServerConnection mbsc = jmx.getConnection();
+            TomcatNodeMetric tomcatNodeMetric = TomcatMetrics.getTomcatNodeMetric(mbsc);
+            setTomcatNodeDetail(mbsc,tomcatNodeMetric);
+            return tomcatNodeMetric;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return new TomcatNodeMetric();
+        }
+
+
+
     }
 
     public HostDynamicMetric getHostDynamicMetric() {
-        TomcatJmx jmx = new TomcatJmx(this.host, this.port);
-        jmx.connect();
-        MBeanServerConnection mbsc = jmx.getConnection();
-        HostDynamicMetric hostDynamic = TomcatMetrics.getHostAttribute(mbsc);
-        jmx.close();
-        return hostDynamic;
+        try(TomcatJmx jmx = new TomcatJmx(this.host, this.port)){
+            jmx.connect();
+            MBeanServerConnection mbsc = jmx.getConnection();
+            return TomcatMetrics.getHostAttribute(mbsc);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return new HostDynamicMetric();
+        }
     }
 
     public List<ProtocolDynamicMetric> getProtocolDynamicMetric() {
-        TomcatJmx jmx = new TomcatJmx(this.host, this.port);
-        jmx.connect();
-        MBeanServerConnection mbsc = jmx.getConnection();
-        List<ProtocolDynamicMetric> protocolDynamicList = TomcatMetrics.getProtocolAttribute(mbsc);
-        jmx.close();
-        return protocolDynamicList;
+        try(TomcatJmx jmx = new TomcatJmx(this.host, this.port)){
+            jmx.connect();
+            MBeanServerConnection mbsc = jmx.getConnection();
+            return TomcatMetrics.getProtocolAttribute(mbsc);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public List<ThreadPoolDynamicMetric> getThreadPoolDynamicMetric() {
-        TomcatJmx jmx = new TomcatJmx(this.host, this.port);
-        jmx.connect();
-        MBeanServerConnection mbsc = jmx.getConnection();
-        List<ThreadPoolDynamicMetric> threadPoolList = TomcatMetrics.getThreadPoolAttribute(mbsc);
-        jmx.close();
-        return threadPoolList;
+        try(TomcatJmx jmx = new TomcatJmx(this.host, this.port)){
+            jmx.connect();
+            MBeanServerConnection mbsc = jmx.getConnection();
+            return TomcatMetrics.getThreadPoolAttribute(mbsc);
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
-    private TomcatNodeMetric setTomcatNodeDetail(MBeanServerConnection mbsc, TomcatNodeMetric node) {
+    private void setTomcatNodeDetail(MBeanServerConnection mbsc, TomcatNodeMetric node) {
         TomcatNodeDetail nodeDetail = new TomcatNodeDetail();
         nodeDetail.setAjpProtocolMetric(TomcatMetrics.getAjpProtocolMetric(mbsc));
         nodeDetail.setHttpProtocolMetric(TomcatMetrics.getHttpProtocolMetric(mbsc));
@@ -79,17 +95,16 @@ public class TomcatNodeManager {
         nodeDetail.setServletMetricMap(TomcatMetrics.getServletMetricMap(mbsc));
         nodeDetail.setThreadPoolMetricMap(TomcatMetrics.getThreadPoolMap(mbsc));
         node.setTomcatNodeDetail(nodeDetail);
-        return node;
     }
 
 
     public Boolean testNodeConnect() {
-        TomcatJmx jmx = new TomcatJmx(this.host, this.port);
-        jmx.connect();
-        boolean connect = jmx.getConnector() != null;
-        jmx.close();
-        return connect;
+        try(TomcatJmx jmx = new TomcatJmx(this.host, this.port)){
+            jmx.connect();
+            return jmx.getConnector() != null;
+        }catch(Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
     }
-
-
 }

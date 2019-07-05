@@ -1,19 +1,19 @@
 package com.lyy.tomcat.model.metric;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.File;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class EngineMetric {
     //后台进程延迟
     private Integer backgroundProcessorDelay;
     //基准目录
-    private String catalinaBase;
+    private File catalinaBase;
+    //基准目录字符串
+    private String catalinaBaseString;
     //默认主机
     private String defaultHost;
     //jvm路由
@@ -29,4 +29,9 @@ public class EngineMetric {
     private Integer startStopThreads;
     //状态
     private String stateName;
+
+    public String getCatalinaBaseString(){
+        return this.catalinaBase.toString();
+    }
+
 }

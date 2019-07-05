@@ -22,6 +22,4 @@ public class ThreadPoolDynamicMetric {
 
     private String threadPoolName;
 
-    //对应tomcat实例
-    private String instance;
 }

@@ -4,13 +4,18 @@ import com.lyy.tomcat.model.dynamicMetric.HostDynamicMetric;
 import com.lyy.tomcat.model.dynamicMetric.ProtocolDynamicMetric;
 import com.lyy.tomcat.model.dynamicMetric.ThreadPoolDynamicMetric;
 import com.lyy.tomcat.model.metric.*;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.management.*;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import java.lang.reflect.Field;
 import java.util.*;
-
+@Slf4j
 public class TomcatMetrics {
 
-    private static String getEngineName(MBeanServerConnection mbsc) {
+    public static String getEngineName(MBeanServerConnection mbsc) {
         String engineName = "";
         try {
             ObjectName objName = new ObjectName("*:type=Engine");
@@ -20,6 +25,7 @@ public class TomcatMetrics {
             }
             return engineName;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return engineName;
         }
     }
@@ -28,10 +34,9 @@ public class TomcatMetrics {
         try {
             ObjectName clusterName = new ObjectName(getEngineName(mbsc) + ":type=Cluster");
             AttributeList attributes = mbsc.getAttributes(clusterName, MetricArray.CLUSTER_STR);
-            return new TomcatCluster((String) ((Attribute) attributes.get(0)).getValue(), (String) ((Attribute) attributes.get(1)).getValue(),
-                    (Integer) ((Attribute) attributes.get(2)).getValue(), (Integer) ((Attribute) attributes.get(3)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(4)).getValue(), (Boolean) ((Attribute) attributes.get(5)).getValue());
+            return convertInstance(attributes,new TomcatCluster());
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new TomcatCluster();
         }
     }
@@ -46,6 +51,7 @@ public class TomcatMetrics {
             nodeMetric.setProtocolPortMap(portProtocolMap);
             return nodeMetric;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new TomcatNodeMetric();
         }
     }
@@ -55,7 +61,7 @@ public class TomcatMetrics {
             ObjectName engineObjName = new ObjectName(getEngineName(mbsc) + ":type=Engine");
             return (String) mbsc.getAttribute(engineObjName, "jvmRoute");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return "";
         }
     }
@@ -64,12 +70,9 @@ public class TomcatMetrics {
         try {
             ObjectName serverName = new ObjectName(getEngineName(mbsc) + ":type=Server");
             AttributeList attributes = mbsc.getAttributes(serverName, MetricArray.SERVER_STR);
-            return new ServerMetric((String) ((Attribute) attributes.get(0)).getValue(), (String) ((Attribute) attributes.get(1)).getValue(),
-                    (Integer) ((Attribute) attributes.get(2)).getValue(), (String) ((Attribute) attributes.get(3)).getValue(),
-                    (String) ((Attribute) attributes.get(4)).getValue(), (String) ((Attribute) attributes.get(5)).getValue(),
-                    (String) ((Attribute) attributes.get(6)).getValue());
+            return convertInstance(attributes,new ServerMetric());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ServerMetric();
         }
     }
@@ -78,30 +81,23 @@ public class TomcatMetrics {
         try {
             ObjectName engineName = new ObjectName(getEngineName(mbsc) + ":type=Engine");
             AttributeList attributes = mbsc.getAttributes(engineName, MetricArray.ENGINE_STR);
-            return new EngineMetric((Integer) ((Attribute) attributes.get(0)).getValue(), ((Attribute) attributes.get(1)).getValue().toString(),
-                    (String) ((Attribute) attributes.get(2)).getValue(), (String) ((Attribute) attributes.get(3)).getValue(),
-                    (String) ((Attribute) attributes.get(4)).getValue(), (String) ((Attribute) attributes.get(5)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(6)).getValue(), (Integer) ((Attribute) attributes.get(7)).getValue(),
-                    (String) ((Attribute) attributes.get(8)).getValue());
+            EngineMetric engineMetric =  convertInstance(attributes,new EngineMetric());
+            return engineMetric;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new EngineMetric();
         }
     }
 
     public static HostMetric getHostMetric(MBeanServerConnection mbsc) {
         try {
-            ObjectName hostObjName = new ObjectName(getEngineName(mbsc) + ":type=Host,host=localhost");
-            AttributeList attributes = mbsc.getAttributes(hostObjName, MetricArray.HOST_STR);
-            return new HostMetric((String) ((Attribute) attributes.get(0)).getValue(), (Boolean) ((Attribute) attributes.get(1)).getValue(),
-                    (Integer) ((Attribute) attributes.get(2)).getValue(), (String) ((Attribute) attributes.get(3)).getValue(),
-                    (String) ((Attribute) attributes.get(4)).getValue(), (Boolean) ((Attribute) attributes.get(5)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(6)).getValue(), (Boolean) ((Attribute) attributes.get(7)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(8)).getValue(), (String) ((Attribute) attributes.get(9)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(10)).getValue(), (Integer) ((Attribute) attributes.get(11)).getValue(),
-                    (String) ((Attribute) attributes.get(12)).getValue(), (Boolean) ((Attribute) attributes.get(13)).getValue(),
-                    (Boolean) ((Attribute) attributes.get(14)).getValue());
+            ObjectName objName = new ObjectName(getEngineName(mbsc) + ":type=Host,host=*");
+            Set<ObjectName> set = mbsc.queryNames(objName, null);
+            ObjectName hostObjectName = set.iterator().next() ;
+            AttributeList attributes = mbsc.getAttributes(hostObjectName, MetricArray.HOST_STR);
+            return convertInstance(attributes,new HostMetric());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new HostMetric();
         }
     }
@@ -114,19 +110,12 @@ public class TomcatMetrics {
                 if (entry.getValue().contains("AJP")) {
                     ObjectName objName = new ObjectName(engineName + ":type=ProtocolHandler,port=" + entry.getKey());
                     AttributeList attributes = mbsc.getAttributes(objName, MetricArray.AJP_STR);
-                    return new AjpProtocolMetric((Integer) ((Attribute) attributes.get(0)).getValue(), (Integer) ((Attribute) attributes.get(1)).getValue(),
-                            (Integer) ((Attribute) attributes.get(2)).getValue(), (Boolean) ((Attribute) attributes.get(3)).getValue(),
-                            (Boolean) ((Attribute) attributes.get(4)).getValue(), (Integer) ((Attribute) attributes.get(5)).getValue(),
-                            (Integer) ((Attribute) attributes.get(6)).getValue(), (Integer) ((Attribute) attributes.get(7)).getValue(),
-                            (Integer) ((Attribute) attributes.get(8)).getValue(), (Integer) ((Attribute) attributes.get(9)).getValue(),
-                            (String) ((Attribute) attributes.get(10)).getValue(), (String) ((Attribute) attributes.get(11)).getValue(),
-                            (Boolean) ((Attribute) attributes.get(12)).getValue(), (Integer) ((Attribute) attributes.get(13)).getValue(),
-                            (Boolean) ((Attribute) attributes.get(14)).getValue(), (Boolean) ((Attribute) attributes.get(15)).getValue());
+                    return convertInstance(attributes,new AjpProtocolMetric());
                 }
             }
             return new AjpProtocolMetric();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new AjpProtocolMetric();
         }
     }
@@ -139,19 +128,12 @@ public class TomcatMetrics {
                 if (entry.getValue().contains("HTTP")) {
                     ObjectName objName = new ObjectName(engineName + ":type=ProtocolHandler,port=" + entry.getKey());
                     AttributeList attributes = mbsc.getAttributes(objName, MetricArray.HTTP_STR);
-                    return new HttpProtocolMetric((Integer) ((Attribute) attributes.get(0)).getValue(), (Integer) ((Attribute) attributes.get(1)).getValue(),
-                            (Integer) ((Attribute) attributes.get(2)).getValue(), (String) ((Attribute) attributes.get(3)).getValue(),
-                            (Boolean) ((Attribute) attributes.get(4)).getValue(), (Integer) ((Attribute) attributes.get(5)).getValue(),
-                            (Integer) ((Attribute) attributes.get(6)).getValue(), (Integer) ((Attribute) attributes.get(7)).getValue(),
-                            (Integer) ((Attribute) attributes.get(8)).getValue(), (Integer) ((Attribute) attributes.get(9)).getValue(),
-                            (Integer) ((Attribute) attributes.get(10)).getValue(), (String) ((Attribute) attributes.get(11)).getValue(),
-                            (String) ((Attribute) attributes.get(12)).getValue(), (Boolean) ((Attribute) attributes.get(13)).getValue(),
-                            (Integer) ((Attribute) attributes.get(14)).getValue(), (Boolean) ((Attribute) attributes.get(15)).getValue());
+                    return convertInstance(attributes,new HttpProtocolMetric());
                 }
             }
             return new HttpProtocolMetric();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new HttpProtocolMetric();
         }
     }
@@ -160,28 +142,40 @@ public class TomcatMetrics {
         try {
             ObjectName objName = new ObjectName(engineName + ":type=ThreadPool,name=" + threadPoolName);
             AttributeList attributes = mbsc.getAttributes(objName, MetricArray.THREADPOOL_STR);
-            return new ThreadPoolMetric((Boolean) ((Attribute) attributes.get(0)).getValue(), (Integer) ((Attribute) attributes.get(1)).getValue(),
-                    (Integer) ((Attribute) attributes.get(2)).getValue(), (Boolean) ((Attribute) attributes.get(3)).getValue(),
-                    (Long) ((Attribute) attributes.get(4)).getValue(), (String) ((Attribute) attributes.get(5)).getValue(),
-                    (Integer) ((Attribute) attributes.get(6)).getValue(), (Boolean) ((Attribute) attributes.get(7)).getValue(),
-                    (Integer) ((Attribute) attributes.get(8)).getValue(), (Integer) ((Attribute) attributes.get(9)).getValue());
+            return convertInstance(attributes,new ThreadPoolMetric());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ThreadPoolMetric();
         }
     }
 
+    private static <T> T convertInstance(AttributeList attributeList,T t) throws IllegalAccessException {
+        for (Attribute attribute : attributeList.asList()) {
+            String name = attribute.getName();
+            Object value = attribute.getValue();
+            Field  field = null;
+            try {
+                field = t.getClass().getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+            }
+            if(field!= null){
+                field.setAccessible(true);
+                field.set(t, value);
+            }
+        }
+        return t;
+    }
+
     private static ServletMetric getServletMetric(MBeanServerConnection mbsc, String servletName, String engineName) {
         try {
-            ObjectName objName = new ObjectName(engineName + ":j2eeType=Servlet,WebModule=//localhost/,name=" + servletName + ",J2EEApplication=none,J2EEServer=none");
-            AttributeList attributes = mbsc.getAttributes(objName, MetricArray.SERVLET_STR);
-            return new ServletMetric((Boolean) ((Attribute) attributes.get(0)).getValue(), (Integer) ((Attribute) attributes.get(1)).getValue(),
-                    (Integer) ((Attribute) attributes.get(2)).getValue(), (Integer) ((Attribute) attributes.get(3)).getValue(),
-                    (Integer) ((Attribute) attributes.get(4)).getValue(), (Long) ((Attribute) attributes.get(5)).getValue(),
-                    (Long) ((Attribute) attributes.get(6)).getValue(), (Long) ((Attribute) attributes.get(7)).getValue(),
-                    (Integer) ((Attribute) attributes.get(8)).getValue(), (String) ((Attribute) attributes.get(9)).getValue());
+            ObjectName objName = new ObjectName(engineName + ":j2eeType=Servlet,WebModule=*,name=" + servletName + ",J2EEApplication=none,J2EEServer=none");
+            Set<ObjectName> set = mbsc.queryNames(objName, null);
+            ObjectName servlet = set.iterator().next();
+            AttributeList attributes = mbsc.getAttributes(servlet, MetricArray.SERVLET_STR);
+            ServletMetric servletMetric = new ServletMetric();
+            return convertInstance(attributes,servletMetric);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ServletMetric();
         }
     }
@@ -199,7 +193,7 @@ public class TomcatMetrics {
             }
             return servletMetricMap;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new HashMap<>();
         }
     }
@@ -214,7 +208,7 @@ public class TomcatMetrics {
             }
             return protocolMap;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new HashMap<>();
         }
     }
@@ -233,7 +227,7 @@ public class TomcatMetrics {
             }
             return threadPoolMap;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new HashMap<>();
         }
     }
@@ -244,21 +238,14 @@ public class TomcatMetrics {
      */
     public static HostDynamicMetric getHostAttribute(MBeanServerConnection mbsc) {
         try {
-            ObjectName objName = new ObjectName(getEngineName(mbsc) + ":type=Manager,context=/,host=localhost");
-            AttributeList attributes = mbsc.getAttributes(objName, MetricArray.HOST_DYNAMIC_METRIC);
+            ObjectName objName = new ObjectName(getEngineName(mbsc) + ":type=Manager,context=*,host=*");
+            Set<ObjectName> set = mbsc.queryNames(objName, null);
+            ObjectName hostDynamicObjName = set.iterator().next();
+            AttributeList attributes = mbsc.getAttributes(hostDynamicObjName, MetricArray.HOST_DYNAMIC_METRIC);
             HostDynamicMetric metrics = new HostDynamicMetric();
-            metrics.setActiveSessions((Integer) ((Attribute) attributes.get(0)).getValue());
-            metrics.setCounterNoStateTransfered((Integer) ((Attribute) attributes.get(1)).getValue());
-            metrics.setExpiredSessions((Long) ((Attribute) attributes.get(2)).getValue());
-            metrics.setMaxActive((Integer) ((Attribute) attributes.get(3)).getValue());
-
-            metrics.setMaxActiveSessions((Integer) ((Attribute) attributes.get(4)).getValue());
-            metrics.setRejectedSessions((Integer) ((Attribute) attributes.get(5)).getValue());
-            metrics.setSessionAverageAliveTime((Integer) ((Attribute) attributes.get(6)).getValue());
-            metrics.setSessionMaxAliveTime((Integer) ((Attribute) attributes.get(7)).getValue());
-            metrics.setSessionReplaceCounter((Long) ((Attribute) attributes.get(8)).getValue());
-            return metrics;
+            return convertInstance(attributes,metrics);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new HostDynamicMetric();
         }
     }
@@ -278,15 +265,11 @@ public class TomcatMetrics {
                 ObjectName protocolObjName = new ObjectName(engineName + ":type=GlobalRequestProcessor,name=" + threadPoolName);
                 AttributeList attributes = mbsc.getAttributes(protocolObjName, MetricArray.PROTOCOL_DYNAMIC_METRIC);
                 protocolDynamicMetric.setProtocolName(threadPoolName);
-                protocolDynamicMetric.setBytesReceived((Long) ((Attribute) attributes.get(0)).getValue());
-                protocolDynamicMetric.setBytesSent((Long) ((Attribute) attributes.get(1)).getValue());
-                protocolDynamicMetric.setErrorCount((Integer) ((Attribute) attributes.get(2)).getValue());
-                protocolDynamicMetric.setProcessingTime((Long) ((Attribute) attributes.get(3)).getValue());
-                protocolDynamicMetric.setRequestCount((Integer) ((Attribute) attributes.get(4)).getValue());
-                protocolList.add(protocolDynamicMetric);
+                protocolList.add(convertInstance(attributes,protocolDynamicMetric));
             }
             return protocolList;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -306,15 +289,11 @@ public class TomcatMetrics {
                 AttributeList attributes = mbsc.getAttributes(threadPoolObject, MetricArray.THREADPOOL_DYNAMIC_METRIC);
                 ThreadPoolDynamicMetric threadPoolDynamicMetric = new ThreadPoolDynamicMetric();
                 threadPoolDynamicMetric.setThreadPoolName(threadPoolName);
-                threadPoolDynamicMetric.setConnectionCount((Long) ((Attribute) attributes.get(0)).getValue());
-                threadPoolDynamicMetric.setAcceptorThreadCount((Integer) ((Attribute) attributes.get(1)).getValue());
-                threadPoolDynamicMetric.setCurrentThreadCount((Integer) ((Attribute) attributes.get(2)).getValue());
-                threadPoolDynamicMetric.setCurrentThreadsBusy((Integer) ((Attribute) attributes.get(3)).getValue());
-                list.add(threadPoolDynamicMetric);
+                list.add(convertInstance(attributes,threadPoolDynamicMetric));
             }
             return list;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -328,6 +307,7 @@ public class TomcatMetrics {
             Set<ObjectName> set = mbsc.queryNames(objName, null);
             return set.size();
         } catch (Exception e) {
+            log.error(e.getMessage());
             return 0;
         }
     }
