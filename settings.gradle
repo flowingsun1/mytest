@@ -1,2 +1,6 @@
 rootProject.name = 'mytest'
 
+new File(rootDir, 'library').eachDir { dir ->
+    include ":${dir.name}"
+    project(":${dir.name}").projectDir = dir
+}

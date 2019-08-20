@@ -1,0 +1,12 @@
+project(':nxms-elasticsearch') {
+    dependencies {
+
+        compile("org.elasticsearch.client:elasticsearch-rest-high-level-client:${elasticVersion}")
+        compile("org.elasticsearch:elasticsearch:${elasticVersion}")
+        compile('com.google.code.gson:gson:2.3.1')
+        compile('org.projectlombok:lombok')
+        compile('org.springframework.boot:spring-boot-starter')
+        compile('org.springframework.boot:spring-boot-starter-web')
+        
+    }
+}
