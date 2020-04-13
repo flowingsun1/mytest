@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>房价计算工具</title>
+    <!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+    <script src="vue/vue.min.js"></script>
+    <script src="element/index.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <link rel="stylesheet" href="element/index.css">
+    <style>
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-aside width="200px"></el-aside>
+        <el-container>
+            
+            <el-main>
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <p>总价（万）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>面积（平米）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>估价（万每平米）</p>
+                    </el-col>
+
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="total" type="" placeholder="总价（万）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="area" type="" placeholder="面积（平米）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-input size="medium" v-model="evaluate" type="" placeholder="估价（万每平米）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-button size="medium " @click="calc()" type="primary">计算</el-button>
+                    </el-col>
+                </el-row>
+
+                <p>单价：{{unit}}</p>
+
+                <p>首付：{{first}}</p>
+
+                <p>评估价：{{price}}</p>
+
+                <p>总税费（税+中介费+评估费）：{{tax}}</p>
+
+                <p>贷款总额：{{daiTotal}}（下方商贷金额随总额变动）</p>
+                <br/>
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <p>商业贷款金额（万）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>公积金贷款金额（万）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>还款方式</p>
+                    </el-col>
+
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="dai.sMoney" placeholder="商业贷款金额（万）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="dai.gMoney" placeholder="公积金贷款金额（万）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-select clearable v-model="dai.type" placeholder="还款方式">
+                            <el-option
+                                    v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <p>商贷利率（昆山6.125）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>公积金利率（昆山3.25）</p>
+                    </el-col>
+                    <el-col :span="5">
+                        <p>还款年限（年）</p>
+                    </el-col>
+
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="dai.sRate" placeholder="商贷利率（昆山6.125）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="dai.gRate" placeholder="公积金利率（昆山3.25）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-input size="medium " v-model="dai.year" placeholder="还款年限（年）" clearable></el-input>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-button size="medium " @click="calc2()" type="primary">计算</el-button>
+                    </el-col>
+                </el-row>
+
+                <p>待还总额：{{dai.totalPay}}</p>
+
+                <!--<p>每月还款额：{{dai.monthPay}}</p>-->
+
+                <p>平均每月还款额：{{dai.avgMonthPay}}</p>
+                <p>首月还款额：{{dai.firstMonth}}</p>
+                <p>每月递减：{{dai.decline}}</p>
+
+            </el-main>
+            <el-footer></el-footer>
+        </el-container>
+    </el-container>
+
+
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue.js!',
+            unit: "",
+            first: "",
+            total: "",
+            daiTotal: "",
+            area: "",
+            evaluate: "",
+            price:"",
+            tax:"",
+            dai: {
+                sMoney: "",
+                sRate: "",
+                gMoney: "",
+                gRate: "",
+                type: "",
+                year:"",
+                totalPay:"",
+                monthPay:"",
+                avgMonthPay:"",
+                firstMonth:"",
+                decline:""
+            },
+            options: [{
+                value: 'benxi',
+                label: '等额本息'
+            }, {
+                value: 'benjin',
+                label: '等额本金'
+            }]
+        },
+        methods: {
+            calc: function () {
+                if(this.total === ""){
+                    this.total = 0;
+                }
+                if(this.area === ""){
+                    this.area = 0;
+                }
+                if(this.evaluate === ""){
+                    this.evaluate = 0;
+                }
+                this.price = this.evaluate*10000*this.area;
+                var dai = this.price * 0.7;
+                this.daiTotal = dai.toFixed(2);
+                this.unit = this.area===0.00?0:(this.total * 10000 / this.area).toFixed(2);
+                this.first = (this.total * 10000 - dai).toFixed(2);
+                this.tax = (this.area >=90?this.price*0.04:this.price*0.035).toFixed(2);
+                var taxRate = this.area>=90?"4%":"3.5%";
+                this.tax = this.tax+"（"+taxRate+"）";
+                this.calc2();
+            },
+            calc2: function () {
+                this.dai.sMoney = this.daiTotal==0?this.dai.sMoney:(this.daiTotal/10000).toFixed(2)-this.dai.gMoney;
+                // this.dai.gMoney = this.daiTotal==0?this.dai.gMoney:this.daiTotal/10000-this.dai.sMoney;
+                if(this.dai.sMoney === ""){
+                    this.dai.sMoney = 0;
+                }
+                if(this.dai.sRate === ""){
+                    this.dai.sRate = 6.125;
+                }
+                if(this.dai.gMoney === ""){
+                    this.dai.gMoney = 0;
+                }
+                if(this.dai.gRate === ""){
+                    this.dai.gRate = 3.25;
+                }
+                if(this.dai.year === ""){
+                    this.dai.year = 20;
+                }
+                if(this.dai.type === ""){
+                    this.dai.type = "benxi";
+                }
+
+                var stotalPay;
+                var gtotalPay;
+                var sMonthPay;
+                var sMonthRate;
+                var gMonthPay;
+                var gMonthRate;
+                if(this.dai.type === ""|| this.dai.type==="benxi"){
+                    sMonthRate = this.dai.sRate/12/100;
+                    var temp = Math.pow(1+sMonthRate,this.dai.year*12);
+                    sMonthPay = this.dai.sMoney*10000*sMonthRate*temp/(temp-1);
+                    stotalPay = sMonthPay*12*this.dai.year;
+
+                    gMonthRate = this.dai.gRate/12/100;
+                    var temp2 = Math.pow(1+gMonthRate,this.dai.year*12);
+                    gMonthPay = this.dai.gMoney*10000*gMonthRate*temp2/(temp2-1);
+                    gtotalPay = gMonthPay*12*this.dai.year;
+
+                    this.dai.totalPay = (stotalPay+gtotalPay).toFixed(2);
+                    this.dai.monthPay = (sMonthPay+gMonthPay).toFixed(2);
+                    this.dai.avgMonthPay = (sMonthPay+gMonthPay).toFixed(2);
+                    this.dai.decline = 0.00;
+                    this.dai.firstMonth = this.dai.monthPay;
+                }else{
+                    sMonthRate = this.dai.sRate/12/100;
+                    var money1 = parseInt(this.dai.sMoney*10000);
+                    stotalPay = sMonthRate/2*this.dai.sMoney*10000*(this.dai.year*12+1)+money1;
+
+                    gMonthRate = this.dai.gRate/12/100;
+                    var money2 = parseInt(this.dai.gMoney*10000);
+                    gtotalPay = gMonthRate/2*this.dai.gMoney*10000*(this.dai.year*12+1)+money2;
+
+
+                    this.dai.totalPay = (stotalPay+gtotalPay).toFixed(2);
+                    this.dai.avgMonthPay = ((stotalPay+gtotalPay)/this.dai.year/12).toFixed(2);
+                    this.dai.monthPay = this.dai.avgMonthPay;
+                    this.dai.decline = (money1/this.dai.year/12*sMonthRate+money2/this.dai.year*gMonthRate).toFixed(2);
+                    this.dai.firstMonth = ((money1+money2)/this.dai.year/12+money1*sMonthRate+money2*gMonthRate).toFixed(2);
+                }
+            }
+        }
+
+    })
+</script>
+</body>
+</html>
