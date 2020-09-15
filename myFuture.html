@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyFuture</title>
+</head>
+
+<body>
+    <div style="text-align: center;margin-top: 10%">
+        <button id="btn" onclick="myClick()">点击</button>
+        <label for="spn"></label><input type="text" id="spn">
+    </div>
+</body>
+
+<script>
+
+    function myClick() {
+        document.getElementById("spn").value = getFive()+","+getTwo();
+    }
+    function getFive() {
+        var set = new Set();
+        var max=35,min=1;
+        while (set.size < 5){
+            var ran = Math.floor(Math.random()*(max-min+1)+min);
+            set.add(ran);
+        }
+        return [...set].sort(function (a,b) {
+            return a - b;
+        });
+    }
+    function getTwo() {
+        var set = new Set();
+        var max=12,min=1;
+        while (set.size < 2){
+            var ran = Math.floor(Math.random()*(max-min+1)+min);
+            set.add(ran);
+        }
+        return [...set].sort(function (a,b) {
+            return a - b;
+        });
+    }
+</script>
+</html>
