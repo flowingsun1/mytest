@@ -50,7 +50,6 @@
         var myChart = echarts.init(document.getElementById("chart1"));
         var myChart2 = echarts.init(document.getElementById("chart2"));
         var xVal = [];
-        var xVal2 = [];
         for (let i = 1; i < 11; i++) {
             xVal[i-1] = "第"+i+"期";
         }
@@ -131,7 +130,7 @@
                         color: '#000'//坐标值得具体的颜色
                     },
                     interval:0,
-                    rotate:60//旋转角度
+                   // rotate:60//旋转角度
 
                 }
             },
@@ -324,7 +323,7 @@
                         color: '#000'//坐标值得具体的颜色
                     },
                     interval:0,
-                    rotate:60//旋转角度
+                    //rotate:60//旋转角度
 
                 }
             },
@@ -356,7 +355,7 @@
                             }
                         }
                     },
-                    data: y1,
+                    data: y21,
 
                 },
                 {
@@ -373,7 +372,7 @@
                             }
                         }
                     },
-                    data: y2,
+                    data: y22,
                 },
                 {
                     name: '前区3',
@@ -381,7 +380,7 @@
                     //stack: '车辆动作数量',
                     //barWidth: '60%',
                     yAxisIndex: 0,
-                    data:y3,
+                    data:y23,
                     itemStyle: {
                         normal: {
                             color: "#386db3",//折线点的颜色
@@ -398,7 +397,7 @@
                     //stack: '车辆动作数量',
                     //barWidth: '60%',
                     yAxisIndex: 0,
-                    data:y4,
+                    data:y24,
                     itemStyle: {
                         normal: {
                             color: "#386db3",//折线点的颜色
@@ -415,7 +414,7 @@
                     //stack: '车辆动作数量',
                     //barWidth: '60%',
                     yAxisIndex: 0,
-                    data:y5,
+                    data:y25,
                     itemStyle: {
                         normal: {
                             color: "#386db3",//折线点的颜色
@@ -432,7 +431,7 @@
                     //stack: '车辆动作数量',
                     //barWidth: '60%',
                     yAxisIndex: 0,
-                    data:y6,
+                    data:y26,
                     itemStyle: {
                         normal: {
                             color: "#386db3",//折线点的颜色
@@ -449,7 +448,7 @@
                     //stack: '车辆动作数量',
                     //barWidth: '60%',
                     yAxisIndex: 0,
-                    data:y7,
+                    data:y27,
                     itemStyle: {
                         normal: {
                             color: "#b3132c",//折线点的颜色
