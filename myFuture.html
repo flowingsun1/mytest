@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<div style="text-align: center;margin-top: 150px;">
+<div style="text-align: center;margin-top: 50px;">
     <div style="">
         <button id="btn" style="font-size: 30px" onclick="myClick1()">大乐透</button>
         <label for="spn"></label><input type="text" style="font-size: 30px" id="spn">
@@ -17,7 +17,9 @@
         <button id="btn2" style="font-size: 30px" onclick="myClick2()">双色球</button>
         <label for="spn2"></label><input type="text" style="font-size: 30px" id="spn2">
     </div>
-    <div id="chart1" style="margin-top:100px;width:84%;height:600px;margin-bottom: 50px;margin-left: 8%"></div>
+    <div id="chart1" style="margin-top:100px;width:84%;height:600px;margin-left: 8%"></div>
+
+    <div id="chart2" style="margin-top:100px;width:84%;height:600px;margin-bottom: 50px;margin-left: 8%"></div>
 
 </div>
 </body>
@@ -46,14 +48,19 @@
         //     return fmt;
         // };
         var myChart = echarts.init(document.getElementById("chart1"));
+        var myChart2 = echarts.init(document.getElementById("chart2"));
         var xVal = [];
+        var xVal2 = [];
         for (let i = 1; i < 11; i++) {
             xVal[i-1] = "第"+i+"期";
         }
         var y1 = [],y2 = [],y3 = [],y4 = [],y5 = [],y6 = [],y7 = [];
+        var y21 = [],y22 = [],y23 = [],y24 = [],y25 = [],y26 = [],y27 = [];
         for (let i = 0; i < 10; i++) {
             var five = getFive();
             var two = getTwo();
+            var six = getSix();
+            var one = getOne();
             y1[i] = five[0];
             y2[i] = five[1];
             y3[i] = five[2];
@@ -61,57 +68,64 @@
             y5[i] = five[4];
             y6[i] = two[0];
             y7[i] = two[1];
+            y21[i] = six[0];
+            y22[i] = six[1];
+            y23[i] = six[2];
+            y24[i] = six[3];
+            y25[i] = six[4];
+            y26[i] = six[5];
+            y27[i] = one;
         }
         var totalOption = {
-                //折线颜色
-                color:['#5aa2c3', '#dadace', '#efb7a6', '#74b971', '#2308DA', '#8a26e4', '#a2320f'],
-                //标题
-                title: {
-                    text: '大乐透历史图表',
-                    axisPointer: {
-                        type: 'shadow'
-                    },
-                    //文本样式
-                    textStyle: {
-                        color: '#000'//文本颜色
-                    }
+            //折线颜色
+            color:['#5aa2c3', '#dadace', '#efb7a6', '#74b971', '#2308DA', '#8a26e4', '#a2320f'],
+            //标题
+            title: {
+                text: '大乐透历史图表',
+                axisPointer: {
+                    type: 'shadow'
                 },
-                legend: {
-                    data: ['前区1', '前区2', '前区3', '前区4', '前区5', '后区1', '后区2']
-                },
-                tooltip: {
-                    trigger: 'axis',//item 显示鼠标移上去的值， axis显示所有值
-                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                        type: false        // false hover时不显示直线轴
-                    }
-                },
-                //工具栏
-                toolbox: {
-                    show: true,//是否显示
-                    feature: {
+                //文本样式
+                textStyle: {
+                    color: '#000'//文本颜色
+                }
+            },
+            legend: {
+                data: ['前区1', '前区2', '前区3', '前区4', '前区5', '后区1', '后区2']
+            },
+            tooltip: {
+                trigger: 'axis',//item 显示鼠标移上去的值， axis显示所有值
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: false        // false hover时不显示直线轴
+                }
+            },
+            //工具栏
+            toolbox: {
+                show: true,//是否显示
+                feature: {
 
-                        dataView: {
-                            readOnly: false
-                        }, //数据视图
-                        magicType: {
-                            type: ['line', 'bar']
-                        },  //切换为折线图，切换为柱状图
-                        restore: {},  //还原
-                        saveAsImage: {}   //保存为图片
-                    }
-                },
-                grid: {
-                    left: '3%',//grid 组件离容器左侧的距离。
-                    right: '3%',
-                    //bottom: '3%',
-                    containLabel: true,
-                    y2:100//x轴文字高度
-                },
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: true,
-                    offset: 10,
-                    data: xVal,
+                    dataView: {
+                        readOnly: false
+                    }, //数据视图
+                    magicType: {
+                        type: ['line', 'bar']
+                    },  //切换为折线图，切换为柱状图
+                    restore: {},  //还原
+                    saveAsImage: {}   //保存为图片
+                }
+            },
+            grid: {
+                left: '3%',//grid 组件离容器左侧的距离。
+                right: '3%',
+                //bottom: '3%',
+                containLabel: true,
+                y2:100//x轴文字高度
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,
+                offset: 10,
+                data: xVal,
                 axisLabel: {
                     textStyle: {
                         color: '#000'//坐标值得具体的颜色
@@ -255,7 +269,201 @@
                 }
             ]
         };
+        var totalOption2 = {
+            //折线颜色
+            color:['#5aa2c3', '#dadace', '#efb7a6', '#74b971', '#2308DA', '#8a26e4', '#a2320f'],
+            //标题
+            title: {
+                text: '双色球历史图表',
+                axisPointer: {
+                    type: 'shadow'
+                },
+                //文本样式
+                textStyle: {
+                    color: '#000'//文本颜色
+                }
+            },
+            legend: {
+                data: ['前区1', '前区2', '前区3', '前区4', '前区5', '前区6', '后区1']
+            },
+            tooltip: {
+                trigger: 'axis',//item 显示鼠标移上去的值， axis显示所有值
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: false        // false hover时不显示直线轴
+                }
+            },
+            //工具栏
+            toolbox: {
+                show: true,//是否显示
+                feature: {
+
+                    dataView: {
+                        readOnly: false
+                    }, //数据视图
+                    magicType: {
+                        type: ['line', 'bar']
+                    },  //切换为折线图，切换为柱状图
+                    restore: {},  //还原
+                    saveAsImage: {}   //保存为图片
+                }
+            },
+            grid: {
+                left: '3%',//grid 组件离容器左侧的距离。
+                right: '3%',
+                //bottom: '3%',
+                containLabel: true,
+                y2:100//x轴文字高度
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: true,
+                offset: 10,
+                data: xVal,
+                axisLabel: {
+                    textStyle: {
+                        color: '#000'//坐标值得具体的颜色
+                    },
+                    interval:0,
+                    rotate:60//旋转角度
+
+                }
+            },
+            yAxis: [{
+                type: 'value',
+                axisLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#000'//坐标值得具体的颜色
+                    }
+                }
+            }],
+            series: [
+                {
+                    name: '前区1',
+                    type: 'line',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    },
+                    data: y1,
+
+                },
+                {
+                    name: '前区2',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    },
+                    data: y2,
+                },
+                {
+                    name: '前区3',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    data:y3,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    }
+
+                },
+                {
+                    name: '前区4',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    data:y4,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    }
+
+                },
+                {
+                    name: '前区5',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    data:y5,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    }
+
+                },
+                {
+                    name: '前区6',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    data:y6,
+                    itemStyle: {
+                        normal: {
+                            color: "#386db3",//折线点的颜色
+                            lineStyle: {
+                                color: "#386db3"//折线的颜色
+                            }
+                        }
+                    }
+
+                },
+                {
+                    name: '后区1',
+                    type: 'line',
+                    //stack: '车辆动作数量',
+                    //barWidth: '60%',
+                    yAxisIndex: 0,
+                    data:y7,
+                    itemStyle: {
+                        normal: {
+                            color: "#b3132c",//折线点的颜色
+                            lineStyle: {
+                                color: "#b3132c"//折线的颜色
+                            }
+                        }
+                    }
+
+                }
+            ]
+        };
         myChart.setOption(totalOption);
+        myChart2.setOption(totalOption2);
     };
 
     function myClick1() {
