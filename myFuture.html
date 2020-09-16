@@ -6,21 +6,43 @@
 </head>
 
 <body>
-    <div style="text-align: center;margin-top: 10%">
-        <button id="btn" onclick="myClick()">点击</button>
+<div style="text-align: center;margin-top: 10%;font-size: 40px;">
+    <div>
+        <button id="btn" onclick="myClick1()">大乐透</button>
         <label for="spn"></label><input type="text" id="spn">
     </div>
+
+    <div style="margin-top: 0">
+        <button id="btn2" onclick="myClick2()">双色球</button>
+        <label for="spn2"></label><input type="text" id="spn2">
+    </div>
+
+</div>
 </body>
 
 <script>
 
-    function myClick() {
-        document.getElementById("spn").value = getFive()+","+getTwo();
+    function myClick1() {
+        document.getElementById("spn").value = getFive()+" + "+getTwo();
+    }
+    function myClick2() {
+        document.getElementById("spn2").value = getSix()+" + "+getOne();
     }
     function getFive() {
         var set = new Set();
         var max=35,min=1;
         while (set.size < 5){
+            var ran = Math.floor(Math.random()*(max-min+1)+min);
+            set.add(ran);
+        }
+        return [...set].sort(function (a,b) {
+            return a - b;
+        });
+    }
+    function getSix() {
+        var set = new Set();
+        var max=33,min=1;
+        while (set.size < 6){
             var ran = Math.floor(Math.random()*(max-min+1)+min);
             set.add(ran);
         }
@@ -38,6 +60,10 @@
         return [...set].sort(function (a,b) {
             return a - b;
         });
+    }
+    function getOne() {
+        var max=16,min=1;
+        return Math.floor(Math.random() * (max - min + 1) + min);
     }
 </script>
 </html>
