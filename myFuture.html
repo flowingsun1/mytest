@@ -10,12 +10,12 @@
 <body>
 <div style="text-align: center;margin-top: 80px;">
     <div style="">
-        <button id="btn" style="font-size: 30px" onclick="myClick1()">大乐透</button>
+        <button id="btn" style="font-size: 30px" onclick="myClick1()">大乐</button>
         <label for="spn"></label><input type="text" style="font-size: 30px" id="spn">
     </div>
 
     <div style="margin-top: 30px;">
-        <button id="btn2" style="font-size: 30px" onclick="myClick2()">双色球</button>
+        <button id="btn2" style="font-size: 30px" onclick="myClick2()">双色</button>
         <label for="spn2"></label><input type="text" style="font-size: 30px" id="spn2">
     </div>
     <div id="chart1" style="margin-top:80px;width:84%;height:600px;margin-left: 8%"></div>
@@ -466,16 +466,42 @@
         myChart2.setOption(totalOption2);
 
         AV.init({
-            appId: "{{appid}}",
-            appKey: "{{appkey}}",
-            serverURL: "https://please-replace-with-your-customized.domain.com"
+            appId: "{{cKuIBdJBK3Xpwrk5mIpODK0V-gzGzoHsz}}",
+            appKey: "{{uvtMDVpN1TEig1lycfL6993E }}",
+            serverURL: "flowingsun1.github.io"
         });
 
 
     };
 
     function myClick1() {
-        document.getElementById("spn").value = getFive()+" + "+getTwo();
+        var five = getFive();
+        var two = getTwo();
+        document.getElementById("spn").value = five+" + "+two;
+        // 声明 class
+        const Todo = AV.Object.extend('Todo');
+
+        // 构建对象
+        const todo = new Todo();
+
+        // 为属性赋值
+        todo.set('f1',five[0]);
+        todo.set('f2',five[1]);
+        todo.set('f3',five[2]);
+        todo.set('f4',five[3]);
+        todo.set('f5',five[4]);
+        todo.set('a1',two[0]);
+        todo.set('a2',two[1]);
+
+
+        // 将对象保存到云端
+        todo.save().then((todo) => {
+            // 成功保存之后，执行其他逻辑
+            console.log(`保存成功。objectId：${todo.id}`);
+        }, (error) => {
+            // 异常处理
+        });
+
     }
     function myClick2() {
         document.getElementById("spn2").value = getSix()+" + "+getOne();
