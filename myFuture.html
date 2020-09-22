@@ -10,12 +10,12 @@
 <body>
 <div style="text-align: center;margin-top: 80px;">
     <div style="">
-        <button id="btn" style="font-size: 30px" onclick="myClick1()">大乐</button>
+        <button id="btn" style="font-size: 30px" onclick="myClick1()">BigHappy</button>
         <label for="spn"></label><input type="text" style="font-size: 30px" id="spn">
     </div>
 
     <div style="margin-top: 30px;">
-        <button id="btn2" style="font-size: 30px" onclick="myClick2()">双色</button>
+        <button id="btn2" style="font-size: 30px" onclick="myClick2()">DobbleColor</button>
         <label for="spn2"></label><input type="text" style="font-size: 30px" id="spn2">
     </div>
     <div id="chart1" style="margin-top:80px;width:84%;height:600px;margin-left: 8%"></div>
@@ -81,7 +81,7 @@
             color:['#5aa2c3', '#dadace', '#efb7a6', '#74b971', '#2308DA', '#8a26e4', '#a2320f'],
             //标题
             title: {
-                text: '大乐透随机16期',
+                text: 'BigHappy随机16期',
                 axisPointer: {
                     type: 'shadow'
                 },
@@ -274,7 +274,7 @@
             color:['#5aa2c3', '#dadace', '#efb7a6', '#74b971', '#2308DA', '#8a26e4', '#a2320f'],
             //标题
             title: {
-                text: '双色球随机16期',
+                text: 'DobbleColor随机16期',
                 axisPointer: {
                     type: 'shadow'
                 },
@@ -466,9 +466,14 @@
         myChart2.setOption(totalOption2);
 
         AV.init({
-            appId: "{{cKuIBdJBK3Xpwrk5mIpODK0V-gzGzoHsz}}",
-            appKey: "{{uvtMDVpN1TEig1lycfL6993E }}",
-            serverURL: "flowingsun1.github.io"
+            appId: "{{nEzl4y60MahqiID8TaAN23Vq-MdYXbMMI}}",
+            appKey: "{{a1gWGJiebudXgCBjmeocfcVJ}}",
+            serverURLs: {
+                push: 'https://aaaaaaaa.push.lncldglobal.com',
+                stats: 'https://aaaaaaaa.stats.lncldglobal.com',
+                engine: 'https://aaaaaaaa.engine.lncldglobal.com',
+                api: 'https://aaaaaaaa.api.lncldglobal.com',
+            },
         });
 
 
@@ -479,7 +484,7 @@
         var two = getTwo();
         document.getElementById("spn").value = five+" + "+two;
         // 声明 class
-        const Todo = AV.Object.extend('Todo');
+        const Todo = AV.Object.extend('BigHappy');
 
         // 构建对象
         const todo = new Todo();
