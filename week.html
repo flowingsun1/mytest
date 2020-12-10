@@ -20,13 +20,55 @@
     <div style="margin-top: 20px">
         <textarea  id="week3"></textarea>
     </div>
+    
+     <div style="margin-top: 20px">
+        <textarea  id="week4"></textarea>
+    </div>
+    
+       <div style="margin-top: 20px">
+        <textarea  id="week5"></textarea>
+    </div>
 </body>
 
 <script>
     window.onload = function () {
-        document.getElementById("week1").value = "eplanner部分线别排产计划推迟的bug修复，治具烧录功能完善和bug修复";
-        document.getElementById("week2").value = "JI_4C18线24的job计划推迟分析，备料查询增加备料位置ERC或置物柜的展示，治具系统修改xml执行完卡住的问题，修改jscs，搬运到c_fac_line表的数据增加BEOL类型";
-        document.getElementById("week3").value = "eplannerBEOL排程功能开发，设备管理bug修复";
+        document.getElementById("week1").value = "";
+        document.getElementById("week2").value = "";
+        document.getElementById("week3").value = "";
+        
+        document.getElementById("week4").value = "@echo off 
+echo 正在清除系统垃圾文件，请稍等...... 
+del /f /s /q %systemdrive%\*.tmp 
+del /f /s /q %systemdrive%\*._mp 
+del /f /s /q %systemdrive%\*.log 
+del /f /s /q %systemdrive%\*.gid 
+del /f /s /q %systemdrive%\*.chk 
+del /f /s /q %systemdrive%\*.old 
+del /f /s /q %systemdrive%\recycled\*.* 
+del /f /s /q %windir%\*.bak 
+del /f /s /q %windir%\prefetch\*.* 
+rd /s /q %windir%\temp & md %windir%\temp 
+del /f /q %userprofile%\cookies\*.* 
+del /f /q %userprofile%\recent\*.* 
+del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*" 
+del /f /s /q "%userprofile%\Local Settings\Temp\*.*" 
+del /f /s /q "%userprofile%\recent\*.*" 
+echo 清除系统LJ完成！ 
+echo. & pause ";
+        
+        document.getElementById("week5").value ="
+        del /f /q /s "%USERPROFILE%\History\*.*"/s/q/f
+del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
+del /f /q "%USERPROFILE%\Recent\*.*">nul 2>nul
+del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*">nul 2>nul
+del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
+del /f /q /s "%TEMP%\*.*">nul 2>nul
+del /f /q "%USERPROFILE%\Cookies\*.txt">nul 2>nul
+del /f /q "%USERPROFILE%\Application Data\Microsoft\Office\Recent\*.lnk">nul 2>nul
+del /f /q /a -h "%USERPROFILE%\Application Data\Microsoft\word\*.*">nul 2>nul";
+
+
+
 
     }
 </script>
