@@ -11,7 +11,8 @@
     </style>
 </head>
 <body>
-    @echo off 
+    <div>
+         @echo off 
 echo 正在清除系统垃圾文件，请稍等...... 
 del /f /s /q %systemdrive%\*.tmp 
 del /f /s /q %systemdrive%\*._mp 
@@ -30,6 +31,20 @@ del /f /s /q "%userprofile%\Local Settings\Temp\*.*"
 del /f /s /q "%userprofile%\recent\*.*" 
 echo 清除系统LJ完成！ 
 echo. & pause 
+    </div>
+    
+    <div>
+                del /f /q /s "%USERPROFILE%\History\*.*"/s/q/f
+del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
+del /f /q "%USERPROFILE%\Recent\*.*">nul 2>nul
+del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*">nul 2>nul
+del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
+del /f /q /s "%TEMP%\*.*">nul 2>nul
+del /f /q "%USERPROFILE%\Cookies\*.txt">nul 2>nul
+del /f /q "%USERPROFILE%\Application Data\Microsoft\Office\Recent\*.lnk">nul 2>nul
+del /f /q /a -h "%USERPROFILE%\Application Data\Microsoft\word\*.*">nul 2>nul";
+    </div>
+   
     <div>
         <textarea  id="week1"></textarea>
     </div>
@@ -40,33 +55,17 @@ echo. & pause
         <textarea  id="week3"></textarea>
     </div>
     
-     <div style="margin-top: 20px">
-        <textarea  id="week4"></textarea>
-    </div>
-    
-       <div style="margin-top: 20px">
-        <textarea  id="week5"></textarea>
-    </div>
+ 
 </body>
 
 <script>
     window.onload = function () {
-        document.getElementById("week1").value = "";
-        document.getElementById("week2").value = "";
-        document.getElementById("week3").value = "";
+        document.getElementById("week1").value = "S01排产增加BEOL的偏贴排产逻辑，兼容JI的逻辑和配置";
+        document.getElementById("week2").value = "beol排产增加beol相关的线别和model，更新jscs内容,备料查询新增根据ERC或者BOX查询的功能，beol排产增加线别搬运的jscs";
+        document.getElementById("week3").value = "S01BEOL的偏贴排产逻辑功能实现及测试";
         
-        document.getElementById("week4").value = "";
-        
-        document.getElementById("week5").value ="
-        del /f /q /s "%USERPROFILE%\History\*.*"/s/q/f
-del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
-del /f /q "%USERPROFILE%\Recent\*.*">nul 2>nul
-del /f /s /q "%userprofile%\Local Settings\Temporary Internet Files\*.*">nul 2>nul
-del /f /q /s "%USERPROFILE%\Local Settings\Temp\*.*">nul 2>nul
-del /f /q /s "%TEMP%\*.*">nul 2>nul
-del /f /q "%USERPROFILE%\Cookies\*.txt">nul 2>nul
-del /f /q "%USERPROFILE%\Application Data\Microsoft\Office\Recent\*.lnk">nul 2>nul
-del /f /q /a -h "%USERPROFILE%\Application Data\Microsoft\word\*.*">nul 2>nul";
+    
+
 
 
 
